@@ -6,7 +6,7 @@ spec:
   destination:
     namespace: opsmx-argo
     server: https://kubernetes.default.svc
-  project: opsmxproject
+  project: opsmxproj
   source:
     path: prometheus-rollouts-demo
     repoURL: https://github.com/OpsMx/isd-sample-apps.git

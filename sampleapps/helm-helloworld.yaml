@@ -17,7 +17,7 @@ spec:
         - name: service.type
           value: ClusterIP
       values: 'message: " Hello !!, OpsMx deployed via Helm repo !!"'
-  project: opsmxproject
+  project: opsmxproj
   syncPolicy:
     automated:
       prune: false
