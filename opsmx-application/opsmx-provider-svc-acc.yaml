@@ -1,0 +1,38 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: opsmx-provider-account 
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: opsmx-provider-account
+rules:
+  - apiGroups:
+      - "batch"
+    resources:
+      - jobs/status
+    verbs:
+      - get
+      - list
+      - patch
+  - apiGroups:	
+      - ""	
+    resources:	
+      - pods	
+    verbs:	
+      - get	
+      - list
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: opsmx-provider-account
+subjects:
+  - kind: ServiceAccount
+    name: opsmx-provider-account
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: opsmx-provider-account

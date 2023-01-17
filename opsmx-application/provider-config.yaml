@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opsmx-provider-config
+data:
+  providerConfig: |
+    application: sample-opsmx-rollout-app
+    lifetimeMinutes: 3
+    gitops: true
+    passScore: 80
+    serviceList:
+    - serviceName: rollout-app-svc
+      metricScopeVariables: "${namespace_key},${pod_key},${app_name}"
+      baselineMetricScope: "isd411,.*{{env.STABLE_POD_HASH}}.*,rollout-app"
+      canaryMetricScope: "isd411,.*{{env.LATEST_POD_HASH}}.*,rollout-app"
+      metricTemplateName: "prometheus-app-health-validator"
+      logScopeVariables: "resource.labels.pod_name"
+      baselineLogScope: ".*{{env.STABLE_POD_HASH}}.*"
+      canaryLogScope: ".*{{env.LATEST_POD_HASH}}.*"
+      logTemplateName: "elasticsearch-generic-minimal"

@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: helm-kubernetes
+spec:
+  destination:
+    name: ''
+    namespace: argo-sampleapp
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: ''
+    repoURL: 'https://helmcharts.opsmx.com/'
+    targetRevision: 1.0.3
+    chart: hello-kubernetes
+    helm:
+      parameters:
+        - name: service.type
+          value: ClusterIP
+      values: 'message: " Hello !!, OpsMx deployed via Helm repo !!"'
+  project: opsmxproj
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false

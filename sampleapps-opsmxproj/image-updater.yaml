@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    argocd-image-updater.argoproj.io/git-branch: main
+    argocd-image-updater.argoproj.io/image-list: docker.io/opsmxdev/issuegen:~v3
+    argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/githubsecret
+  name: imageupdatetest
+spec:
+  destination:
+    namespace: argo-sampleapp
+    server: https://kubernetes.default.svc
+  project: opsmxproj
+  source:
+    kustomize:
+      namePrefix: image
+      nameSuffix: update
+    path: image-updater
+    repoURL: git@github.com:OpsMx/argo-sample-apps.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: log-verifier
+data:
+  elasticsearch-generic-minimal: |
+    monitoringProvider: ELASTICSEARCH
+    accountName: elasticsearch
+    index: kubernetes*
+    filterKey: kubernetes.pod_name
+    responseKeywords: log

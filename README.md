@@ -1,1 +1,1 @@
-# -isd-sample-apps
+# isd-sample-apps
