@@ -1,13 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AnalysisTemplate
 metadata:
-  name: opsmx-analysis
+  name: local-alysis-tmpl
 spec:
   args:
     - name: canary-hash
     - name: baseline-hash
   metrics:
-    - name: opsmx-analysis-score
+    - name: prom-tmpl
+      initialDelay: 30s
       provider:
         job:
           spec:
@@ -16,8 +17,8 @@ spec:
               spec:
                 serviceAccountName: opsmx-provider-account
                 containers:
-                - name: opsmx-provider
-                  image: 'quay.io/opsmxpublic/argo-isd-metric-provider-job:v1.1.9' 
+                - name: tmpl-gitops
+                  image: 'quay.io/opsmxpublic/argo-isd-metric-provider-job:v1.1.7'
                   imagePullPolicy: Always
                   env:
                     - name: MY_POD_NAME
@@ -31,7 +32,7 @@ spec:
                   volumeMounts:
                     - name: provider-config-volume
                       mountPath: /etc/config/provider
-                    - name: metric-config-volume
+                    - name: gitopstemplates
                       mountPath: /etc/config/templates
                     - name: secret-config-volume
                       mountPath: /etc/config/secrets
@@ -40,15 +41,13 @@ spec:
                 volumes:
                 - name: provider-config-volume
                   configMap:
-                    name: opsmx-provider-config
-                - name: metric-config-volume
+                    name: local-provider-config
+                - name: gitopstemplates
                   projected:
                     sources:
                     - configMap:
-                        name: metric-verifier
-                    - configMap:
-                        name: log-verifier
+                        name: prometheus-verifier
                 - name: secret-config-volume
                   secret:
-                    secretName: opsmx-profile
+                    secretName: local-opsmx-profile
                     optional: false

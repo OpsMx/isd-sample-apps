@@ -5,7 +5,7 @@ metadata:
 spec:
   destination:
     name: ''
-    namespace: argo-sampleapp
+    namespace: opsmx-argo
     server: 'https://kubernetes.default.svc'
   source:
     path: ''
@@ -17,7 +17,7 @@ spec:
         - name: service.type
           value: ClusterIP
       values: 'message: " Hello !!, OpsMx deployed via Helm repo !!"'
-  project: opsmxproj
+  project: opsmxproject
   syncPolicy:
     automated:
       prune: false

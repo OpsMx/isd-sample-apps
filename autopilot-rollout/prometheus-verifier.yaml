@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-verifier
+data:
+  prometheus-verifier: |
+    accountName: opsmx-prom
+    advancedProvider: PROMETHEUS
+    metricTemplateSetup:
+      percentDiffThreshold: hard
+      groups:
+        - metrics:
+            - metricType: ADVANCED
+              name: "avg(container_memory_usage_bytes{ pod=~\".*${pod_key}.*\"})"
+          group: "Memory Usage By Pod Name"
+        - metrics:
+            - metricType: ADVANCED
+              name: "avg(rate(container_cpu_usage_seconds_total{ pod=~\".*${pod_key}.*\"}[2m]) * 100)"
+          group: CPU Usage By Pod Name

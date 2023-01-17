@@ -1,0 +1,26 @@
+# This secret, nothing secret in this yet, contains configuration
+# that is used by all Rollout Analysis operations 
+#
+# This accesses ISD installed with-in the same cluster (as Rollouts)
+# NOTE: This needs to be present in the namespace where Rollouts is to be executed
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: local-opsmx-profile  # This name is best not changed. It is mounted in the AnalysisTemplate
+stringData:
+  # ISD can be installed with or without argoCD. With ArgoCD additional integration is available for Rollout applications
+  # true= ISD+argoCD installed along with Rollouts
+  # false = Only ISD+Rollouts is installed(no argoCD integration)
+  cdIntegration: "true"
+
+  # This is used for displaying "where" the Rollout is happening in the ISD UI
+  # If cd-integration is true, it MUST match the cd-name in ISD.
+  # if false, it can be any indicative string e.g. prod-cluster or mycluster
+  sourceName: "argocd"
+
+  opsmxIsdUrl: "http://oes-ui.isd412rc7:8093" 
+ 
+  # User name that will be used for the analysis.
+  # This user must have access to the data sources (prometheus/elastic, etc) used during the Rollout Analysis
+  user: "admin"
