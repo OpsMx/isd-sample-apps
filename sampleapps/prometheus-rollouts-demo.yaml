@@ -1,15 +1,15 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: canary-rollout
+  name: prometheus-rollouts-demo
 spec:
   destination:
-    namespace: argo-sampleapp
+    namespace: opsmx-argo
     server: https://kubernetes.default.svc
-  project: opsmxproj
+  project: opsmxproject
   source:
-    path: canary-rollout
-    repoURL: git@github.com:OpsMx/argo-sample-apps.git
+    path: prometheus-rollouts-demo
+    repoURL: git@github.com:OpsMx/isd-sample-apps.git
     targetRevision: HEAD
   syncPolicy:
     automated:

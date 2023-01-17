@@ -1,17 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: helm-kubernetes
+  name: nginx-deploy
 spec:
   destination:
-    namespace: argo-sampleapp
+    namespace: opsmx-argo
     server: https://kubernetes.default.svc
-  project: opsmxproj
+  project: opsmxproject
   source:
-    path: hello-kubernetes
-    repoURL: git@github.com:OpsMx/argo-sample-apps.git
+    path: sampledeployment
+    repoURL: git@github.com:OpsMx/isd-sample-apps.git
     targetRevision: HEAD
   syncPolicy:
     automated:
       prune: false
       selfHeal: false
+

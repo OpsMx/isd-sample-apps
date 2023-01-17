@@ -1,15 +1,15 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: prometheus-rollouts-demo
+  name: blue-green-rollout
 spec:
   destination:
-    namespace: argo-sampleapp
+    namespace: opsmx-argo
     server: https://kubernetes.default.svc
-  project: opsmxproj
+  project: opsmxproject
   source:
-    path: prometheus-rollouts-demo
-    repoURL: git@github.com:OpsMx/argo-sample-apps.git
+    path: blue-green
+    repoURL: git@github.com:OpsMx/isd-sample-apps.git
     targetRevision: HEAD
   syncPolicy:
     automated:
