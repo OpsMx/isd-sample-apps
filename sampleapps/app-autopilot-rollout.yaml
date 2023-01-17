@@ -7,9 +7,9 @@ metadata:
   name: autopilot-rollout
 spec:
   destination:
-    namespace: argo-sampleapp
+    namespace: opsmx-argo
     server: https://kubernetes.default.svc
-  project: opsmxproj
+  project: opsmxproject
   source:
     directory:
       recurse: true
