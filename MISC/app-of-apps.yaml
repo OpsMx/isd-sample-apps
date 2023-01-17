@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app-of-apps
+spec:
+  destination:
+    namespace: opsmx-argo
+    name: in-cluster
+    server: ''
+  source:
+    path: sampleapps
+    repoURL: 'git@github.com:OpsMx/isd-sample-apps.git'
+    targetRevision: HEAD
+  project: opsmxproject
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
