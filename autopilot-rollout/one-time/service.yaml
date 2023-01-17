@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tmpl-gitops-canary-svc
+spec:
+  ports:
+  - port: 80
+    targetPort: 8088
+    protocol: TCP
+  selector:
+    app: local-rollout
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tmpl-gitops-stable-svc
+spec:
+  ports:
+  - port: 80
+    targetPort: 8088
+    protocol: TCP
+  selector:
+    app: local-rollout

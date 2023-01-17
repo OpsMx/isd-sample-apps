@@ -1,0 +1,20 @@
+# This configuration provides the specific configuration for an application
+# One file per application/pod is expected to be created
+# This needs to be present in the namespace where rollouts is being executed
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: local-provider-config  # This name is used in the AnalysisTemplate
+data:
+  providerConfig: |
+    application: autopilot-rollout # 
+    lifetimeMinutes: 5         # No. of minutes to run the analysis
+    passScore: 80
+    gitops: true               # This should be removed
+    serviceList:
+    - metricTemplateName: prometheus-verifier   # This is the metric template configMap name
+      serviceName: "autopilot-demo"                        # Indicative name for the analysis, same named items are grouped together in the ISD UI 
+      metricScopeVariables: "${pod_key}"   # Comma separated list of variables that will be passed to fetch the metrics
+      baselineMetricScope: ".*{{env.STABLE_POD_HASH}}.*" # Comma separated list of values that will be subsituted for the variables above
+      canaryMetricScope: ".*{{env.LATEST_POD_HASH}}.*"     # Same as above but for the canary (updated) version of the rollout(deployment)
