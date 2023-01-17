@@ -9,7 +9,7 @@ spec:
   project: opsmxproject
   source:
     path: sampledeployment
-    repoURL: git@github.com:OpsMx/isd-sample-apps.git
+    repoURL: https://github.com/OpsMx/isd-sample-apps.git
     targetRevision: HEAD
   syncPolicy:
     automated:

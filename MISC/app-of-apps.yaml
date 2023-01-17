@@ -9,7 +9,7 @@ spec:
     server: ''
   source:
     path: sampleapps
-    repoURL: 'git@github.com:OpsMx/isd-sample-apps.git'
+    repoURL: https://github.com/OpsMx/isd-sample-apps.git
     targetRevision: HEAD
   project: opsmxproject
   syncPolicy:
