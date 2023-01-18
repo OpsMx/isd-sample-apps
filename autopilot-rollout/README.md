@@ -4,9 +4,9 @@ This requires ISD (ArgoCD and rollouts), prometheus and a test application, all 
 To try this out, follow these steps
 1. If not autocreated, Create application: kubectl -n opsmx-argo apply -f app-autopilot-rollout.yaml 
 2. Wait for 2-3 minutes for the application to stabilize
-3. Trigger analysis by bumping the the test image "issuegen:v3.0.4" version to v3.0.5: kubectl edit autopilot-rollouts -n argo-samples
-4. Once the triggered, AnalysisRun will start and a job is created. Check the logs to see the analysis in progress. If there are any errors, please see our troubleshooting guide
-5. Go ISD home screen, click on "autopilot-rollout" -> Analysis Hostory to see the analysis results
+3. Trigger analysis from the application screen by a) Disabling Auto-Sync b) Editing the Rollout object and bumping the the test image "issuegen:v3.0.4" version to v3.0.5, save and come out.
+4. Once the triggered, AnalysisRun will start and a job with Pod is created. Check the logs to see the analysis in progress. If there are any errors, please see our troubleshooting guide
+5. You can see the "More" tab on Rollout object screen or Go ISD home screen, click on "autopilot-rollout" -> Analysis Hostory to see the analysis results
 
 
 The files are as follows:
