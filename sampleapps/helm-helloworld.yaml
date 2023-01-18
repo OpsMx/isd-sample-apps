@@ -5,7 +5,7 @@ metadata:
 spec:
   destination:
     name: ''
-    namespace: opsmx-argo
+    namespace: argo-sampleapp
     server: 'https://kubernetes.default.svc'
   source:
     path: ''

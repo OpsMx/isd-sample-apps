@@ -4,7 +4,7 @@ metadata:
   name: nginx-deploy
 spec:
   destination:
-    namespace: opsmx-argo
+    namespace: argo-sampleapp
     server: https://kubernetes.default.svc
   project: opsmxproj
   source:
