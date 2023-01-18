@@ -1,4 +1,4 @@
-# This folder contains files to help deal with postential issues or recreating sample applications, in case they are deleted.
+## This folder contains files to help deal with postential issues or recreating sample applications, in case they are deleted.
 
 app-of-app.yaml: We use ArgoCD's app-of-app paradigm to install all the sample applications. This can be manually done using: `kubectl -n opsmx-argo apply -f app-of-apps.yaml`
 
