@@ -19,7 +19,7 @@ stringData:
   # if false, it can be any indicative string e.g. prod-cluster or mycluster
   sourceName: "argocd"
 
-  opsmxIsdUrl: "http://oes-ui.isd412rc7:8093" 
+  opsmxIsdUrl: "http://oes-ui.opsmx-argo:8093" 
  
   # User name that will be used for the analysis.
   # This user must have access to the data sources (prometheus/elastic, etc) used during the Rollout Analysis
