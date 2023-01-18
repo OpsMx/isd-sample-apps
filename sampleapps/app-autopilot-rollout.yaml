@@ -6,6 +6,13 @@ metadata:
     argocd.argoproj.io/instance: autopilot-rollout
   name: autopilot-rollout
 spec:
+  info:
+  - name: Triggering-step-1
+    value: Disable auto-sync in this app from the UI
+  - name: Triggering-step-2
+    value: Click on Rollout, edit liveManifest yaml, local image .../issuegen:v3.0.4 and change it v3.0.5
+  - name: Triggering-step-3
+    value: watch the rollout trigger AnalysisRun
   destination:
     namespace: argo-sampleapp
     server: https://kubernetes.default.svc
