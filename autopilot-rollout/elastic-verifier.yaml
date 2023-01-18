@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elastic-verifier
+data:
+  elastic-verifier: |
+    monitoringProvider: ELASTICSEARCH
+    accountName: opsmx-elastic
+    index: kubernetes*
+    responseKeywords: log

@@ -18,3 +18,7 @@ data:
       metricScopeVariables: "${pod_key}"   # Comma separated list of variables that will be passed to fetch the metrics
       baselineMetricScope: ".*{{env.STABLE_POD_HASH}}.*" # Comma separated list of values that will be subsituted for the variables above
       canaryMetricScope: ".*{{env.LATEST_POD_HASH}}.*"     # Same as above but for the canary (updated) version of the rollout(deployment)
+      logTemplateName: elastic-verifier
+      logScopeVariables: "kubernetes.pod_name"
+      baselineLogScope: ".*{{env.STABLE_POD_HASH}}.*"
+      canaryLogScope: ".*{{env.LATEST_POD_HASH}}.*"

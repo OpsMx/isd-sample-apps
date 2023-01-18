@@ -47,6 +47,8 @@ spec:
                     sources:
                     - configMap:
                         name: prometheus-verifier
+                    - configMap:
+                        name: elastic-verifier
                 - name: secret-config-volume
                   secret:
                     secretName: local-opsmx-profile
