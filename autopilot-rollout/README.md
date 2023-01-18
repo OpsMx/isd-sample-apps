@@ -11,7 +11,7 @@ To try this out, follow these steps
 
 The files are as follows:
 1. autopilot-rollout.yaml is the Rollouts YAML
-2. prometheus-verifier.yaml defines the prometheus metrics we want to monitor
+2. prometheus-verifier.yaml and elast-verlfider.yaml define the metrics and logs we want to monitor
 3. local-alysis-tmpl.yaml is Rollouts Analysis template
 4. local-provider-config.yaml file provides configuration for OpsMx Autopilot configuration
 5. the folder "one-time" includes files that need to be applied only once per namespace such as serviceAccount, profile, etc.
