@@ -3,11 +3,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  annotations:
-    "helm.sh/hook": "post-install"
-    "helm.sh/hook-delete-policy": "before-hook-creation"
-    "helm.sh/hook-weight": "13"
-  name: app-of-apps
+  name: app-of-app
 spec:
   destination:
     name: in-cluster
