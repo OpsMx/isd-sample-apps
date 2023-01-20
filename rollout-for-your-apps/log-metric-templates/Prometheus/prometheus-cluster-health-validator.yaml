@@ -1,0 +1,527 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-app-health-validator
+data:
+  prometheus-cluster-health-validator: |
+    {
+      "filterKey": "${namespace_key},${pod_key},${app_name}",
+      "data": {
+        "percent_diff_threshold": "hard",
+        "isNormalize": false,
+        "groups": [
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "ReplaceWithZero",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "Higher",
+                "customThresholdHigher": 50,
+                "name": "sum((container_memory_usage_bytes{container!=\"POD\",container!=\"\"} - on (namespace,pod,container) group_left avg by (namespace,pod,container)(kube_pod_container_resource_requests{resource=\"memory\"})) * -1 > 0) / (5024*5024*5024)",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Underutilized Memory"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "ReplaceWithZero",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "Higher",
+                "customThresholdHigher": 50,
+                "name": "sum((rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}[5m]) - on (namespace,pod,container) group_left avg by (namespace,pod,container)(kube_pod_container_resource_requests{resource=\"cpu\"})) * -1 >0)",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Underutilized CPU"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(kube_pod_container_resource_limits{resource=\"memory\"}) - sum(kube_node_status_capacity{resource=\"memory\"})",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "OverCommit Memory"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(kube_pod_container_resource_limits{resource=\"cpu\"}) - sum(kube_node_status_capacity{resource=\"cpu\"})",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "OverCommit CPU"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(kube_node_status_condition{condition=\"Ready\", status=\"true\"}==1)",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Ready Nodes"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(changes(kube_node_status_condition{status=\"true\",condition=\"Ready\"}[5m]))",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Node Readiness Flapping"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(kube_pod_container_resource_limits{resource=\"cpu\"})",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Cluster CPU Limit"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "ReplaceWithZero",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(kube_pod_container_resource_requests{resource=\"cpu\"})",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Cluster CPU Requests"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(kube_pod_container_resource_limits{resource=\"memory\"})",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Cluster Memory Limit"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "ReplaceWithZero",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(kube_pod_container_resource_requests{resource=\"memory\"})",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Cluster Memory Requests"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(kube_pod_info{namespace=\"${namespace_key}\"})",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Pod Count By NameSpace"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(kube_pod_status_ready{condition=\"false\", namespace=\"${namespace_key}\"})",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Pod NotReady By NameSpace"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(changes(kube_pod_status_ready{condition=\"true\", namespace=\"${namespace_key}\"}[5m]))",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Pod Restarts By NameSpace"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(kube_pod_status_phase{phase=\"Running\", namespace=\"${namespace_key}\"})",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Running Pods By NameSpace"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(kube_pod_status_phase{phase=\"Pending\", namespace=\"${namespace_key}\"})",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Pending Pods By NameSpace"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "Higher",
+                "customThresholdHigher": 50,
+                "name": "sum(kube_pod_status_phase{phase=\"Failed\", namespace=\"${namespace_key}\"})",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Failed Pods By NameSpace"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "ReplaceWithZero",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(kube_pod_container_resource_requests{resource=\"cpu\", namespace=\"${namespace_key}\"})",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "CPU Requests By NameSpace"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(rate(container_cpu_usage_seconds_total{namespace=\"${namespace_key}\"}[5m]))",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "CPU Usage By NameSpace"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "ReplaceWithZero",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(kube_pod_container_resource_requests{resource=\"memory\",namespace=\"${namespace_key}\"})",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Memory Requests By NameSpace"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(container_memory_usage_bytes{namespace=\"${namespace_key}\"})",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Memory Usage By NameSpace"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(rate(container_fs_reads_bytes_total{namespace=\"${namespace_key}\"}[5m]))",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "IO Read Bytes By NameSpace"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(rate(container_fs_writes_bytes_total{namespace=\"${namespace_key}\"}[5m]))",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "IO Write Bytes By NameSpace"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(kube_pod_info{namespace=\"${namespace_key}\", pod=~\".*${pod_key}.*\"})",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Pod Count By Pod Name"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(kube_pod_status_ready{condition=\"false\", namespace=\"${namespace_key}\", pod=~\".*${pod_key}.*\"})",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Pod NotReady By Pod Name"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(changes(kube_pod_status_ready{condition=\"true\", namespace=\"${namespace_key}\", pod=~\".*${pod_key}.*\"}[5m]))",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Pod Restarts By Pod Name"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(kube_pod_status_phase{phase=\"Running\", namespace=\"${namespace_key}\", pod=~\".*${pod_key}.*\"})",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Running Pods By Pod Name"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "sum(kube_pod_status_phase{phase=\"Pending\", namespace=\"${namespace_key}\", pod=~\".*${pod_key}.*\"})",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Pending Pods By Pod Name"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "Higher",
+                "customThresholdHigher": 50,
+                "name": "sum(kube_pod_status_phase{phase=\"Failed\", namespace=\"${namespace_key}\",  pod=~\".*${pod_key}.*\"})",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Failed Pods By Pod Name"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "avg(rate(container_cpu_usage_seconds_total{namespace=\"${namespace_key}\", pod=~\".*${pod_key}.*\"}[5m]))",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "CPU Usage By Pod Name"
+          },
+          {
+            "metrics": [
+              {
+                "metricType": "ADVANCED",
+                "metricWeight": 1,
+                "nanStrategy": "Remove",
+                "accountName": "isd312-saas-prom",
+                "riskDirection": "HigherOrLower",
+                "customThresholdHigher": 50,
+                "name": "avg(container_memory_usage_bytes{namespace=\"${namespace_key}\", pod=~\".*${pod_key}.*\"})",
+                "criticality": "Normal",
+                "customThresholdLower": 50,
+                "watchlist": false
+              }
+            ],
+            "group": "Memory Usage By Pod Name"
+          }
+        ]
+      },
+      "templateName": "prometheus-cluster-health-validator",
+      "advancedProvider": "PROMETHEUS"
+    }

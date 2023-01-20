@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elasticsearch-generic-minimal
+data:
+  elasticsearch-generic-minimal: |
+    monitoringProvider: ELASTICSEARCH
+    accountName: elastic-account-name
+    index: kubernetes*
+    filterKey: kubernetes.pod_name
+    responseKeywords: log

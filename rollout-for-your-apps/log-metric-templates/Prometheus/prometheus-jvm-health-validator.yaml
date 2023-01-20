@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-jvm-health-validator
+data:
+  prometheus-jvm-health-validator: |
+    accountName: prometheus-account
+    metricType: ADVANCED
+    advancedProvider: PROMETHEUS
+    metricWeight: 1
+    criticality: normal
+    nanStrategy: remove
+    metricTemplateSetup:
+      groups:
+        - metrics:
+            - name: "avg(rate(container_cpu_usage_seconds_total{namespace=\"${namespace_key}\", pod=~\"${pod_key}.*\",container=\"${container_key}\"}[1m]))/avg(kube_pod_container_resource_limits_cpu_cores{namespace=\"${namespace_key}\", pod=~\"${pod_key}.*\",container=\"${container_key}\"}) * 100"
+              riskDirection: higher
+              criticality: mustHave
+              customThresholdHigherPercentage: 50
+          group: CPU Usage Percentage
+        - metrics:
+            - name: "avg(rate(container_cpu_usage_seconds_total{namespace=\"${namespace_key}\", pod=~\"${pod_key}.*\",container=\"${container_key}\"}[1m]))"
+              riskDirection: higher
+              criticality: mustHave
+              customThresholdHigherPercentage: 50
+          group: "CPU Usage"
+        - metrics:
+            - name: "avg(rate(container_cpu_system_seconds_total{namespace=\"${namespace_key}\", pod=~\"${pod_key}.*\",container=\"${container_key}\"}[1m]))"
+              riskDirection: higher
+              customThresholdHigherPercentage: 50
+          group: "System CPU"
+        - metrics:
+            - name: "avg(rate(container_cpu_user_seconds_total{namespace=\"${namespace_key}\", pod=~\"${pod_key}.*\",container=\"${container_key}\"}[1m]))"
+              riskDirection: higher
+              customThresholdHigherPercentage: 50
+          group: "User CPU"
+        - metrics:
+            - name: "avg(container_memory_usage_bytes{namespace=\"${namespace_key}\", pod=~\"${pod_key}.*\",container=\"${container_key}\"})/avg(kube_pod_container_resource_limits_memory_bytes{namespace=\"${namespace_key}\", pod=~\"${pod_key}.*\",container=\"${container_key}\"}) * 100"
+              riskDirection: higher
+              criticality: mustHave
+              customThresholdHigherPercentage: 50
+          group: "Memory Usage Percentage"
+        - metrics:
+            - name: "avg(sum by(kubernetes_pod_name)(jvm_memory_used_bytes{kubernetes_namespace=\"${namespace_key}\", area=\"heap\", kubernetes_pod_name=~\"${pod_key}.*\"}))"
+              riskDirection: higher
+              customThresholdHigherPercentage: 50
+              criticality: mustHave
+          group: "Average Heap Used"
+        - metrics:
+            - name: "avg(sum by(kubernetes_pod_name)(jvm_memory_committed_bytes{kubernetes_namespace=\"${namespace_key}\", area=\"heap\", kubernetes_pod_name=~\"${pod_key}.*\"}))"
+              riskDirection: higher
+              criticality: mustHave
+              customThresholdHigherPercentage: 50
+          group: "Average Heap Committed"
+        - metrics:
+            - name: "avg(sum by(kubernetes_pod_name)(jvm_memory_used_bytes{kubernetes_namespace=\"${namespace_key}\", area=\"heap\", kubernetes_pod_name=~\"${pod_key}.*\"}))/avg(sum by(kubernetes_pod_name)(jvm_memory_max_bytes{kubernetes_namespace=\"${namespace_key}\", area=\"heap\", kubernetes_pod_name=~\"${pod_key}.*\"})) * 100"
+              riskDirection: higher
+              criticality: mustHave
+              customThresholdHigherPercentage: 50
+          group: "Average Heap Consumed Percentage"
+        - metrics:
+            - name: "avg(sum by(kubernetes_pod_name)(jvm_memory_used_bytes{kubernetes_namespace=\"${namespace_key}\", area=\"nonheap\", kubernetes_pod_name=~\"${pod_key}.*\"}))"
+              riskDirection: higher
+              customThresholdHigherPercentage: 50
+          group: "Average Non Heap Used"
+        - metrics:
+            - name: "avg(sum by(kubernetes_pod_name)(jvm_memory_committed_bytes{kubernetes_namespace=\"${namespace_key}\", area=\"nonheap\", kubernetes_pod_name=~\"${pod_key}.*\"}))"
+              riskDirection: higher
+              customThresholdHigherPercentage: 50
+          group: "Average Non Heap Committed"
+        - metrics:
+            - name: "avg(jvm_threads_live_threads{app=\"${app_key}\",kubernetes_namespace=\"${namespace_key}\",kubernetes_pod_name=~\"${pod_key}-.*\"})"
+              riskDirection: higher
+              customThresholdHigherPercentage: 50
+          group: "Total Threads"
+        - metrics:
+            - name: "avg(jvm_threads_daemon_threads{app=\"${app_key}\",kubernetes_namespace=\"${namespace_key}\",kubernetes_pod_name=~\"${pod_key}-.*\"})"
+              riskDirection: higher
+              customThresholdHigherPercentage: 50
+          group: "Daemon Threads"
+        - metrics:
+            - name: "avg(jvm_threads_live_threads{app=\"${app_key}\",kubernetes_namespace=\"${namespace_key}\",kubernetes_pod_name=~\"${pod_key}-.*\",state=\"blocked\"}) or vector(0)"
+              riskDirection: higher
+              customThresholdHigherPercentage: 50
+          group: "Blocked Threads"

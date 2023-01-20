@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-nginx-ingress-validator
+data:
+  prometheus-nginx-ingress-validator: |
+    accountName: prometheus-account
+    metricType: ADVANCED
+    advancedProvider: PROMETHEUS
+    metricWeight: 1
+    criticality: normal
+    nanStrategy: remove
+    metricTemplateSetup:
+      groups:
+        - metrics:
+            - name: "avg(rate(nginx_ingress_controller_bytes_sent_count{namespace=\"${namespace_key}\", service= \"${service}\",ingress = \"${ingress}\"}[1m]))"
+              riskDirection: higherOrLower
+              criticality: mustHave
+              customThresholdHigherPercentage: 50
+              customThresholdLowerPercentage: 50
+          group: Number Of Bytes Sent To Client
+        - metrics:
+            - name: "nginx_ingress_controller_ingress_upstream_latency_seconds{namespace=\"${namespace_key}\", service= \"${service}\",ingress = \"${ingress}\", quantile =\"0.5\"}"
+              riskDirection: higher
+              criticality: mustHave
+              customThresholdHigherPercentage: 50
+          group: "Upstream Service Latency Per Ingress - 50th Percentile"
+        - metrics:
+            - name: "nginx_ingress_controller_ingress_upstream_latency_seconds{namespace=\"${namespace_key}\", service= \"${service}\",ingress = \"${ingress}\", quantile =\"0.9\"}"
+              riskDirection: higher
+              criticality: mustHave
+              customThresholdHigherPercentage: 50
+          group: "Upstream Service Latency Per Ingress - 90th Percentile"
+        - metrics:
+            - name: "nginx_ingress_controller_ingress_upstream_latency_seconds{namespace=\"${namespace_key}\", service= \"${service}\",ingress = \"${ingress}\", quantile =\"0.99\"}"
+              riskDirection: higher
+              criticality: mustHave
+              customThresholdHigherPercentage: 50
+          group: "Upstream Service Latency Per Ingress - 99th Percentile"
+        - metrics:
+            - name: "avg(rate(nginx_ingress_controller_requests{namespace=\"${namespace_key}\", service= \"${service}\",ingress = \"${ingress}\"}[1m]))"
+              riskDirection: higherOrLower
+              criticality: mustHave
+              customThresholdHigherPercentage: 50
+              customThresholdLowerPercentage: 50
+          group: "Number Of Client Requests"
+        - metrics:
+            - name: "avg(rate(nginx_ingress_controller_request_size_count{namespace=\"${namespace_key}\", service= \"${service}\",ingress = \"${ingress}\"}[1m]))"
+              riskDirection: higherOrLower
+              customThresholdHigherPercentage: 50
+              customThresholdLowerPercentage: 50
+          group: "Request Length"
+        - metrics:
+            - name: "avg(rate(nginx_ingress_controller_request_duration_seconds_count{namespace=\"${namespace_key}\", service= \"${service}\",ingress = \"${ingress}\"}[1m]))"
+              riskDirection: higher
+              criticality: critical
+              customThresholdHigherPercentage: 50
+          group: "Request Processing Time"
+        - metrics:
+            - name: "sum(rate(nginx_ingress_controller_requests{status=~\"5.*\",namespace=\"${namespace_key}\", service= \"${service}\",ingress = \"${ingress}\"}[1m])) / sum(rate(nginx_ingress_controller_requests{namespace=\"${namespace_key}\", service= \"${service}\",ingress = \"${ingress}\"}[1m])) * 100"
+              riskDirection: higher
+              criticality: critical
+              customThresholdHigherPercentage: 50

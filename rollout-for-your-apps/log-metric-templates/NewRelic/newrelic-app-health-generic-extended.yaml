@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: newrelic-app-health-generic-ext
+data:
+  newrelic-app-health-generic-ext: |
+    accountName: newrelic-account-name
+    metricType: ADVANCED
+    advancedProvider: NEWRELIC
+    metricWeight: 1
+    criticality: normal
+    nanStrategy: remove
+    metricTemplateSetup:
+      groups:
+        - metrics:
+            - name: "SELECT average(duration)*1000 FROM Transaction WHERE appName = '${app_key}' AND host RLIKE '${host_key}'"
+              riskDirection: higher
+              criticality: mustHave
+              customThresholdHigherPercentage: 30
+              nanStrategy: replaceWithZero
+              watchlist: true
+          group: "Transaction Time"
+        - metrics:
+            - name: "SELECT percentile(duration, 95) * 1000 FROM Transaction WHERE appName='${app_key}' AND host RLIKE '${host_key}'"
+              riskDirection: higher
+              customThresholdHigherPercentage: 30
+              nanStrategy: replaceWithZero
+          group: "95th Percentile"
+        - metrics:
+            - name: "SELECT percentile(duration, 99) * 1000 FROM Transaction WHERE appName='${app_key}' AND host RLIKE '${host_key}'"
+              riskDirection: higher
+              customThresholdHigherPercentage: 30
+              nanStrategy: replaceWithZero
+          group: "99th Percentile"
+        - metrics:
+            - name: "SELECT percentile(duration, 90) * 1000 FROM Transaction WHERE appName='${app_key}' AND host RLIKE '${host_key}'"
+              riskDirection: higher
+              customThresholdHigherPercentage: 30
+              nanStrategy: replaceWithZero
+          group: "90th Percentile"
+        - metrics:
+            - name: "SELECT count(apm.service.error.count) / count(apm.service.transaction.duration) FROM Metric WHERE appName = '${app_key}' AND host RLIKE '${host_key}'"
+              riskDirection: higher
+              criticality: critical
+              customThresholdHigherPercentage: 30
+              nanStrategy: replaceWithZero
+              watchlist: true
+          group: "Error Rate"
+        - metrics:
+            - name: "SELECT apdex(apm.service.apdex) FROM Metric WHERE appName='${app_key}' AND host RLIKE '${host_key}'"
+              riskDirection: lower
+              criticality: critical
+              customThresholdLowerPercentage: 20
+              nanStrategy: replaceWithZero
+              watchlist: true
+          group: "Apdex"
+        - metrics:
+            - name: "SELECT average(newrelic.timeslice.value) * 1000 FROM Metric WHERE metricTimesliceName = 'CPU/User/Utilization' AND appName = '${app_key}' AND host RLIKE '${host_key}'"
+              riskDirection: higher
+              criticality: mustHave
+              customThresholdHigherPercentage: 30
+              nanStrategy: replaceWithZero
+          group: "CPU Utilization"
+        - metrics:
+            - name: "SELECT (average(apm.service.memory.physical) * rate(count(apm.service.instance.count), 1 minute)) / 1000 as memoryUsage FROM Metric WHERE (appName = '${app_key}' AND host RLIKE '.*${host_key}.*')"
+              riskDirection: higher
+              criticality: mustHave
+              customThresholdHigherPercentage: 30
+              nanStrategy: replaceWithZero
+          group: "Memory Consumption"

@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-app-health-springboot-ext
+data:
+  prometheus-app-health-springboot-ext: |
+    accountName: prometheus-account
+    metricType: ADVANCED
+    advancedProvider: PROMETHEUS
+    metricWeight: 1
+    criticality: normal
+    nanStrategy: remove
+    metricTemplateSetup:
+      groups:
+        - metrics:
+            - name: "avg(container_memory_usage_bytes{namespace=\"${namespace_key}\", pod=~\".*${pod_key}.*\"})"
+              riskDirection: higher
+              criticality: mustHave
+              customThresholdHigherPercentage: 50
+              nanStrategy: replaceWithZero
+          group: Memory Usage By Pod Name
+        - metrics:
+            - name: "avg(rate(container_cpu_usage_seconds_total{namespace=\"${namespace_key}\", pod=~\".*${pod_key}.*\"}[1m]) * 100)"
+              riskDirection: higher
+              criticality: mustHave
+              customThresholdHigherPercentage: 50
+          group: CPU Usage By Pod Name
+        - metrics:
+            - name: "sum(rate(http_server_requests_seconds_sum{app=\"${app_name}\",kubernetes_pod_name=~\"${pod_key}\"}[1m])) / sum(rate(http_server_requests_seconds_count{app=\"${app_name}\",kubernetes_pod_name=~\"${pod_key}\"}[1m]))"
+              riskDirection: higher
+              customThresholdHigherPercentage: 50
+              criticality: critical
+              watchlist: true
+          group: "Application Latency"
+        - metrics:
+            - name: "avg(rate(http_server_requests_seconds_count{app=\"${app_name}\",kubernetes_pod_name=~\"${pod_key}\"}[1m]))"
+              riskDirection: higherOrLower
+              customThresholdHigherPercentage: 50
+              customThresholdLowerPercentage: 50
+          group: "Application Request Rate"
+        - metrics:
+            - name: "sum(rate(http_server_requests_seconds_count{app=\"${app_name}\",kubernetes_pod_name=~\"${pod_key}\",status=~\"^[4-5].*\"}[1m])) or vector(0)"
+              riskDirection: higher
+              customThresholdHigherPercentage: 50
+              criticality: critical
+              watchlist: true
+          group: "Application Error Rate"

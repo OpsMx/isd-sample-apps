@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stackdriver-generic-minimal
+data:
+  stackdriver-generic-minimal: |
+    monitoringProvider: STACKDRIVER
+    accountName: stackdriver-account-name
+    filterKey: resource.labels.pod_name
+    responseKeywords: textPayload

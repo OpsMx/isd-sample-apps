@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elasticsearch-log-generic-ext
+data:
+  elasticsearch-log-generic-ext: |
+    monitoringProvider: ELASTICSEARCH
+    accountName: elastic-account-name
+    index: kubernetes*
+    filterKey: kubernetes.pod_name
+    responseKeywords: log
+    # errorTopics array if not defined, default set of error topics are applied.
+    # errorTopics array if given and disableDefaultErrorTopics is set to false(default), adds the given list into default applied list and 
+    # if errorString matches with existing errorTopic,default is overridden by the custom one.
+    # errorTopics array if given and disableDefaultErrorTopics is set to true, only the given list will be applied.
+    errorTopics: 
+    - errorString: ArrayIndexOutOfBounds
+      topic: ERROR
+    - errorString: NullPointerException
+      topic: ERROR
+    tags:
+    - errorString: FATAL
+      tag: FatalErrors
