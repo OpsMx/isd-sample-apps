@@ -1,0 +1,20 @@
+# NOTE: This needs to be present in the namespace where Rollouts is to be executed
+# This secret, nothing secret in this yet, contains configuration
+# that is used by all Rollout Analysis operations 
+#
+# In most cases, there is no need to change anything. 
+# CHANGE "opsmxIsdUrl" ONLY if ISD installed in a non-default namespace OR in a different cluster
+# kubectl -n YOUR-ROLLOUT-NAMESPACE apply -f opsmx-profile.yaml # if creating manually..best to let ArgoCD sync it.
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: opsmx-profile                           # This name is best not changed. It is mounted in the AnalysisTemplate
+stringData:
+  opsmxIsdUrl: "http://oes-ui.opsmx-argo:8093"  # URL of ISD UI, use external URL if Rollouts is in a different cluster
+  user: "admin"                                 # ISD User who as access to the data-source accounts(elastic, datadog) used
+  sourceName: "argocd"                          # Cluster identifier, get the value from setup->cdIntegration page in ISD
+
+  # Best left unchanged, change to false if using Rollouts without ArgoCD
+  cdIntegration: "true"
+
