@@ -20,4 +20,6 @@ data:
         - metrics:
             - metricType: ADVANCED
               name: "avg(rate(http_server_requests_seconds_count{app=\"${app_name}\",kubernetes_pod_name=~\"${pod_key}\"}[5m]))"
+            - metricType: ADVANCED
+              name: "sum(rate(http_server_requests_seconds_count{app=\"${app_name}\",kubernetes_pod_name=~\"${pod_key}\",status=~\"^[4-5].*\"}[1m])) or vector(0)"
          group: Performance Score
