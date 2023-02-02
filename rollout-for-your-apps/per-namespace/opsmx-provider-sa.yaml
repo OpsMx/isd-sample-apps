@@ -1,7 +1,7 @@
 # Service Account+Role that allows the Rollouts Job check status of other pods
 # Must be created in the namespace where Rollouts is being executed
 #
-# There is no need to change anything, unless you know what we are doing.
+# No change necessary. Use as is.
 # kubectl -n YOUR-ROLLOUT-NAMESPACE apply -f opsmx-profile.yaml # if creating manually..best to let ArgoCD sync it.
 ---
 apiVersion: v1
