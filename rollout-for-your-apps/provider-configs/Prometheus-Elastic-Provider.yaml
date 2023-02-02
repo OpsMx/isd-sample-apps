@@ -1,0 +1,20 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opsmx-provider-config                  ## Default Name.  Change if multiple analysis is needed in the same namespace
+data:
+  providerConfig: |
+    application: ARGO-CD-APPLICATION-NAME      ## Change this to your application name
+    lifetimeMinutes: 05
+    gitops: true
+    passScore: 60
+    serviceList:
+    - metricScopeVariables: "${app_key},${host_key}"
+      baselineMetricScope: "{{env.STABLE_POD_HASH}}"
+      canaryMetricScope: "{{env.LATEST_POD_HASH}}"
+      metricTemplateName: "metrictemplate"
+      logScopeVariables: "kubernetes.pod_name"
+      baselineLogScope: ".*{{env.STABLE_POD_HASH}}.*"
+      canaryLogScope: ".*{{env.LATEST_POD_HASH}}.*"
+      logTemplateName: "logtemplate"
