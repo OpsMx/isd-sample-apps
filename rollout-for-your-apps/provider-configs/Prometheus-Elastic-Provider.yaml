@@ -6,9 +6,9 @@ metadata:
 data:
   providerConfig: |
     application: ARGO-CD-APPLICATION-NAME      ## Change this to your application name
-    lifetimeMinutes: 05
+    lifetimeMinutes: 05                        ## Change to Analysis Duration in minutes
     gitops: true
-    passScore: 60
+    passScore: 60                              ## Change to Minimum Pass Score.  Any score above this score will continue Rollout.
     serviceList:
     - metricScopeVariables: "${app_key},${host_key}"
       baselineMetricScope: "{{env.STABLE_POD_HASH}}"
