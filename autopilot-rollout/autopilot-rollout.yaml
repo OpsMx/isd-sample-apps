@@ -37,7 +37,7 @@ spec:
     spec:
       containers:
       - name: local-rollout
-        image: docker.io/opsmxdev/issuegen:v3.0.5  # Change this to 3.0.5 for triggering analysis
+        image: docker.io/opsmxdev/issuegen:v3.0.6  # Change this to 3.0.5 for triggering analysis
         ports:
         - name: http
           containerPort: 8088
