@@ -1,0 +1,46 @@
+kind: Rollout
+metadata:
+ name: opsmx-demo
+spec:
+ replicas: 1
+ revisionHistoryLimit: 2
+ selector:
+   matchLabels:
+     app: opsmx-demo
+ workloadRef:                                 
+    apiVersion: apps/v1
+    kind: Deployment
+    name: opsmx-demo-deployment
+ strategy:
+   canary:
+     canaryService: opsmx-demo-canary-svc
+     stableService: opsmx-demo-stable-svc
+     trafficRouting:
+       nginx:
+         stableIngress: opsmx-demo-ing
+     steps:
+     - setWeight: 25
+     - pause: { duration: 60s }
+     - analysis:
+         templates:
+           - templateName: opsmx-analysis-template
+         args:
+           - name: canary-hash
+             valueFrom:
+               podTemplateHashValue: Latest
+           - name: baseline-hash
+             valueFrom:
+               podTemplateHashValue: Stable
+     - setWeight: 75
+     - pause: { duration: 60s }
+     - analysis:
+         templates:
+           - templateName: opsmx-analysis-template
+         args:
+           - name: canary-hash
+             valueFrom:
+               podTemplateHashValue: Latest
+           - name: baseline-hash
+             valueFrom:
+               podTemplateHashValue: Stable
+
