@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: prometheus-app-health-springboot-min
 data:
-  prometheus-app-health-generic-min: |
+  prometheus-app-health-springboot-min: |
     accountName: prometheus-account-name
     metricType: ADVANCED
     advancedProvider: PROMETHEUS
