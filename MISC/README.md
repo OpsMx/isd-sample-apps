@@ -12,7 +12,7 @@
 1. `kubectl -n opsmx-argo delete job oes-autoconfigure`
 2. `Kubectl -n opsmx-argo apply -f https://raw.githubusercontent.com/OpsMx/isd-sample-apps/main/MISC/isdargo-autoconfig-job.yaml`
 
-## keycloak auto configration job 
+## keycloak auto configure job 
 
   Keycloack is auto configured to ISD, If not configured run the job `keycloak-autoconfigure-job.yaml`
 
