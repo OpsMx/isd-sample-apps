@@ -1,0 +1,104 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: keycloack-configure-recheck
+  namespace: NAMESPACE
+spec:
+  template:
+    spec:
+      containers:
+      - args:
+        - |-
+          echo "Waiting for Keycloack Services to come-up"
+          wait_period=0
+          while true
+          do
+          kubectl get po -n NAMESPACE -o jsonpath='{range .items[*]}{..metadata.name}{"\t"}{..containerStatuses..ready}{"\n"}{end}' > /tmp/inst.status
+          KEYCLOACK=$(grep keycloack-0 /tmp/inst.status | awk '{print $2}')
+          #KEYCLOAKPOD=$(kubectl get po -n NAMESPACE | grep "keycloack-0" | awk '{print $1}')
+          #KEYCLOACK=$(grep $KEYCLOAKPOD /tmp/inst.status | awk '{print $2}')
+          wait_period=$(($wait_period+10))
+          if [ "$KEYCLOACK" == "true" ];
+          then
+          echo "keycloackservices are Up and Ready.."
+          sleep 10
+          admuser="keycloak"
+          admpass="keycloak123"
+          group="admin"
+          realm="isd"
+          user="admin"
+          userpass="opsmxadmin123"
+          clientid="isd-client"
+          usermail="keycloack.opsmx@opsmx.io"
+          isdurl="https://mahesh-oes-ui.argo.ninja-test.opsmx.org/login"
+          cd /tmp/keycloak-11.0.0/bin/
+          ## Login
+          ./kcadm.sh config credentials --server http://keycloack-http:80/auth --realm master --user $admuser --client admin-cli --password $admpass
+          ##Check the Realme is created
+          chkrealm=$(./kcadm.sh get realms | jq -r '.[] | select(.realm == "'$realm'") | .realm')
+          if [ "$chkrealm" == "$realm" ];
+          then
+            echo "Realm with name $realm is already configured in keycloak"
+            break
+          else
+            echo "Creating realm..."
+            ## Create a Realm
+            ./kcadm.sh create realms -s realm="$realm" -s displayName="$realm" -s enabled=true -o > /dev/null
+            ## Create Group and get ID
+            ./kcadm.sh create groups -r $realm -b '{ "name": "'$group'" }'
+            groupid=$(./kcadm.sh get groups -r $realm | jq -r '.[] | select(.name=="'$group'") | .id' )
+            ## Create user and get ID
+            ./kcadm.sh create users -r $realm -s username="$user" -s enabled=true -s email="$usermail"
+            userid=$(./kcadm.sh get users -r $realm | jq -r '.[] | select(.username=="'$user'") | .id')
+            ## Create password for user
+            ./kcadm.sh set-password -r $realm --username "$user" --new-password "$userpass"
+            ## Assign User with Group
+            ./kcadm.sh update users/$userid/groups/$groupid -r $realm -s realm=$realm -s userId=$userid -s groupId=$groupid -n
+            ## Create Client with Approiate permissions
+            ./kcadm.sh create clients -r $realm -s clientId=$clientid -s enabled=true -s name="$clientid" -s protocol=openid-connect -s directAccessGrantsEnabled=true -s publicClient=false -s standardFlowEnabled=true -s 'redirectUris=["'$isdurl'"]'
+            ##Get the clientID and secret
+            clsid=$(./kcadm.sh get clients -r $realm --fields 'id,clientId' | jq -r '.[] | select(.clientId=="'$clientid'") | .id')
+            clientsecret=$(./kcadm.sh get -r $realm clients/"$clsid"/client-secret | jq '.value' -r)
+            ## Create mapper for client
+            ./kcadm.sh create clients/"$clsid"/protocol-mappers/models -r $realm -s protocol=openid-connect -s 'config."full.path"=true' -s 'config."id.token.claim"=true' -s 'config."access.token.claim"=true' -s 'config."userinfo.token.claim"=true' -s 'config."claim.name"=isd-claim-token' -s name=isd-mapper -s protocolMapper=oidc-group-membership-mapper -s 'config."claim.name"=group_membership' -s 'config."jsonType.label"=String'
+            ## Updating the OpsMx theme in KeyCloak
+            ./kcadm.sh update realms/$realm -s "loginTheme=OpsMx"
+            ## Adding extra roles to user
+            ./kcadm.sh add-roles -r $realm --uusername $user --cclientid realm-management --rolename view-users --rolename view-clients --rolename view-realm --rolename create-client --rolename manage-clients --rolename manage-events --rolename manage-identity-providers --rolename manage-events --rolename query-users --rolename realm-admin --rolename view-events --rolename impersonation --rolename query-clients --rolename query-groups --rolename query-realms --rolename manage-users --rolename manage-realm --rolename manage-authorization --rolename view-authorization --rolename view-identity-providers
+            ## Adding extra roles user
+            ./kcadm.sh add-roles -r $realm --uusername $user --cclientid account --rolename view-profile --rolename view-applications --rolename view-consent --rolename manage-consent --rolename manage-account-links --rolename manage-account --rolename delete-account
+            ## Adding extra roles to user
+            ./kcadm.sh add-roles -r $realm --uusername $user --cclientid broker --rolename read-token
+            ## Getting the gate secret
+            kubectl get secret oes-gate-config -o jsonpath='{.data.*}' -n NAMESPACE | base64 -d > /tmp/gate1.yml
+            ## Updating the Client Secret
+            yq e '.security.oauth2.client.clientSecret = "'$clientsecret'"' /tmp/gate1.yml > /tmp/gate2.yml
+            mv /tmp/gate2.yml /tmp/gate.yml
+            ## Deleting the Secret
+            kubectl delete secret oes-gate-config -n NAMESPACE
+            ## Creating the Secret with Client Secret Updated value and Deleting the pod
+            kubectl create secret generic oes-gate-config --from-file=/tmp/gate.yml -n NAMESPACE
+            kubectl delete po -l component=gate -n NAMESPACE
+            break
+          fi
+          else
+          if [ $wait_period -gt 2000 ];
+          then
+          echo "Script is timed out as the keycloack is not ready yet......."
+          break
+          else
+          echo "Waiting for keycloack services to be ready"
+          sleep 10
+          fi
+          fi
+          done
+        command:
+        - /bin/bash
+        - +x
+        - -c
+        image: opsmx11/java:keycloak
+        imagePullPolicy: Always
+        name: keycloack-configure-recheck
+      restartPolicy: Never
+      serviceAccount: oes-auto-configure-NAMESPACE
+      serviceAccountName: oes-auto-configure-NAMESPACE
