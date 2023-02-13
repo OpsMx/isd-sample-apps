@@ -1,4 +1,3 @@
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -10,11 +9,11 @@ data:
     gitops: true
     passScore: 60                              ## Change to Minimum Pass Score.  Any score above this score will continue Rollout.
     serviceList:
-    - metricScopeVariables: "${app_key},${host_key}"
-      baselineMetricScope: "{{env.STABLE_POD_HASH}}"
-      canaryMetricScope: "{{env.LATEST_POD_HASH}}"
-      metricTemplateName: "metrictemplate"
+    - metricScopeVariables: "${namespace_key},${pod_key},${app_name}"
+      baselineMetricScope: "opsmx-demo,.*{{env.STABLE_POD_HASH}}.*,opsmx-demo"
+      canaryMetricScope: "opsmx-demo,.*{{env.LATEST_POD_HASH}}.*,opsmx-demo"
+      metricTemplateName: "prometheus-app-health-springboot-min"
       logScopeVariables: "kubernetes.pod_name"
       baselineLogScope: ".*{{env.STABLE_POD_HASH}}.*"
       canaryLogScope: ".*{{env.LATEST_POD_HASH}}.*"
-      logTemplateName: "logtemplate"
+      logTemplateName: "elasticsearch-generic-minimal"
