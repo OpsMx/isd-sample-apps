@@ -1,3 +1,4 @@
+apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
  name: opsmx-demo
@@ -13,11 +14,6 @@ spec:
     name: opsmx-demo-deployment
  strategy:
    canary:
-     canaryService: opsmx-demo-canary-svc
-     stableService: opsmx-demo-stable-svc
-     trafficRouting:
-       nginx:
-         stableIngress: opsmx-demo-ing
      steps:
      - setWeight: 25
      - pause: { duration: 60s }
@@ -43,4 +39,3 @@ spec:
            - name: baseline-hash
              valueFrom:
                podTemplateHashValue: Stable
-
