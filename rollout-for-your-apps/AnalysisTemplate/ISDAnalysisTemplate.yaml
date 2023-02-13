@@ -1,24 +1,24 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AnalysisTemplate
 metadata:
-  name: opsmx-newrel-tmpl                     ## This AnalysisTemplate is used in rollout.yaml
+  name: opsmx-analysis-template
 spec:
   args:
     - name: canary-hash
     - name: baseline-hash
   metrics:
-    - name: opsmx-newrel-tmpl                ## Match it with the above AnalysisTemplate name.
-      initialDelay: 10s
+    - name: opsmx-analysis-template
+      initialDelay: 30s
       provider:
         job:
           spec:
             backoffLimit: 2
             template:
               spec:
-                serviceAccountName: job-acc2         ## Match it with Service Account name
+                serviceAccountName: opsmx-provider-account
                 containers:
-                - name: opsmx-analysis
-                  image: 'quay.io/opsmxpublic/argo-isd-metric-provider-job:v2'  
+                - name: canary-demo-analysis-job
+                  image: quay.io/opsmxpublic/argo-isd-metric-provider-job:v1.2.1
                   imagePullPolicy: Always
                   env:
                     - name: MY_POD_NAME
@@ -32,8 +32,8 @@ spec:
                   volumeMounts:
                     - name: provider-config-volume
                       mountPath: /etc/config/provider
-                    - name: verification-config-volume
-                      mountPath: /etc/config/templates                      
+                    - name: verification-templates-volume
+                      mountPath: /etc/config/templates
                     - name: secret-config-volume
                       mountPath: /etc/config/secrets
                       readOnly: true
@@ -41,15 +41,15 @@ spec:
                 volumes:
                 - name: provider-config-volume
                   configMap:
-                    name: opsmx-provider-config           ## Match it with Analysis Configuration 
-                - name: verification-config-volume
+                    name: opsmx-provider-config
+                - name: verification-templates-volume
                   projected:
                     sources:
                     - configMap:
-                        name: logtemplate                 ## Match it with the Log Template name
+                        name: prometheus-app-health-springboot-min
                     - configMap:
-                        name: metrictemplate              ## Match it with the Metrics Template name
+                        name: elasticsearch-generic-minimal
                 - name: secret-config-volume
                   secret:
-                    secretName: opsmx-profile             ## Match it with the Kubernetes Secret name 
-                    optional: false
+                    secretName: opsmx-profile
+                    optional: false   
