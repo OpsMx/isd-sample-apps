@@ -1,4 +1,3 @@
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -11,10 +10,10 @@ data:
     passScore: 60
     serviceList:
     - metricScopeVariables: "${app_key},${host_key}"
-      baselineMetricScope: "opsmx-demo,{{env.STABLE_POD_HASH}}"
-      canaryMetricScope: "opsmx-demo,{{env.LATEST_POD_HASH}}"
-      metricTemplateName: "metrictemplate"
+      baselineMetricScope: "opsmx-demo,.*{{env.STABLE_POD_HASH}}.*"
+      canaryMetricScope: "opsmx-demo,.*{{env.LATEST_POD_HASH}}.*"
+      metricTemplateName: "newrelic-app-health-generic-min"
       logScopeVariables: "kubernetes.pod_name"
       baselineLogScope: ".*{{env.STABLE_POD_HASH}}.*"
       canaryLogScope: ".*{{env.LATEST_POD_HASH}}.*"
-      logTemplateName: "logtemplate"
+      logTemplateName: "elasticsearch-generic-minimal"
