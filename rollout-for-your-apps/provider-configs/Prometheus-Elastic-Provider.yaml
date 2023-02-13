@@ -4,7 +4,7 @@ metadata:
   name: opsmx-provider-config                  ## Default Name.  Change if multiple analysis is needed in the same namespace
 data:
   providerConfig: |
-    application: opsmx-demo                    ## Change this to your application name as created in ArgoCD
+    application: opsmx-demo                    # Change this to your application name as created in ArgoCD
     lifetimeMinutes: 05                        ## Change to Analysis Duration in minutes
     gitops: true
     passScore: 60                              ## Change to Minimum Pass Score.  Any score above this score will continue Rollout.
