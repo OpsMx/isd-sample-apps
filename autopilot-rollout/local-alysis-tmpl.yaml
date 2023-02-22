@@ -18,7 +18,7 @@ spec:
                 serviceAccountName: opsmx-provider-account
                 containers:
                 - name: tmpl-gitops
-                  image: 'quay.io/opsmxpublic/argo-isd-metric-provider-job:v1.2.1'
+                  image: 'quay.io/opsmxpublic/argo-isd-metric-provider-job:v1.2.3'
                   imagePullPolicy: Always
                   env:
                     - name: MY_POD_NAME
