@@ -6,7 +6,7 @@ metadata:
     kubernetes.io/ingress.class: nginx
 spec:
   rules:
-  - host: canary-deploy.argo.opsmx.net 
+  - host: canary-deploy.isd.opsmx.net 
     http:
       paths:
       - path: /
