@@ -16,7 +16,7 @@ spec:
     failureLimit: 3
     provider:
       prometheus:
-        address: http://prometheus-server.prometheus:80
+        address: http://prometheus-server.prom:80
         query: |
           sum(irate(nginx_ingress_controller_requests{service=~"{{args.service-name}}",status!~"[4-5].*"}[5m])) / 
           sum(irate(nginx_ingress_controller_requests{service=~"{{args.service-name}}"}[5m]))
