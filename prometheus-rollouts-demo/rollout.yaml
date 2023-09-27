@@ -19,13 +19,13 @@ spec:
           stableIngress: prometheus-rollouts-demo
       steps:
       - setWeight: 10
-      - pause: {duration: 5m}
+      - pause: {duration: 2m}
       - setWeight: 20
-      - pause: {duration: 4m}
+      - pause: {duration: 2m}
       - setWeight: 50
-      - pause: {duration: 5m}
+      - pause: {duration: 2m}
       - setWeight: 80
-      - pause: {duration: 5m}
+      - pause: {duration: 2m}
   revisionHistoryLimit: 2
   selector:
     matchLabels:
