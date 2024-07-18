@@ -25,3 +25,4 @@ stringData:
   # User name that will be used for the analysis.
   # This user must have access to the data sources (prometheus/elastic, etc) used during the Rollout Analysis
   user: "admin"
+  agentName: "demoserver-argocd-opsmx-agent"
