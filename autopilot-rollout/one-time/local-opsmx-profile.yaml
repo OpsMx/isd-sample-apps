@@ -17,9 +17,10 @@ stringData:
   # This is used for displaying "where" the Rollout is happening in the ISD UI
   # If cd-integration is true, it MUST match the cd-name in ISD.
   # if false, it can be any indicative string e.g. prod-cluster or mycluster
-  sourceName: "argocd"
+  sourceName: "demoserver-argocd"
 
-  opsmxIsdUrl: "http://oes-ui:8093" 
+  #opsmxIsdUrl: "http://oes-ui:8093" 
+  opsmxIsdUrl: "https://isd.demoserver.opsmx.net"
  
   # User name that will be used for the analysis.
   # This user must have access to the data sources (prometheus/elastic, etc) used during the Rollout Analysis
